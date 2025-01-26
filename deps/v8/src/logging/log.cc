@@ -337,7 +337,7 @@ void CodeEventLogger::RegExpCodeCreateEvent(Handle<AbstractCode> code,
 }
 
 // Linux perf tool logging support.
-#if V8_OS_LINUX
+#if V8_OS_LINUX || V8_OS_DARWIN
 class LinuxPerfBasicLogger : public CodeEventLogger {
  public:
   explicit LinuxPerfBasicLogger(Isolate* isolate);
@@ -2288,7 +2288,7 @@ bool V8FileLogger::SetUp(Isolate* isolate) {
   PrepareLogFileName(log_file_name, isolate, v8_flags.logfile);
   log_file_ = std::make_unique<LogFile>(this, log_file_name.str());
 
-#if V8_OS_LINUX
+#if V8_OS_LINUX || V8_OS_MACOSX
   if (v8_flags.perf_basic_prof) {
     perf_basic_logger_ = std::make_unique<LinuxPerfBasicLogger>(isolate);
     CHECK(logger()->AddListener(perf_basic_logger_.get()));
@@ -2433,7 +2433,7 @@ FILE* V8FileLogger::TearDownAndGetLogFile() {
   ticker_.reset();
   timer_.Stop();
 
-#if V8_OS_LINUX
+#if V8_OS_LINUX || V8_OS_MACOSX
   if (perf_basic_logger_) {
     CHECK(logger()->RemoveListener(perf_basic_logger_.get()));
     perf_basic_logger_.reset();

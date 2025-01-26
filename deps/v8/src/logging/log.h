@@ -357,7 +357,7 @@ class V8FileLogger : public LogEventListener {
 
   std::atomic<bool> is_logging_;
   std::unique_ptr<LogFile> log_file_;
-#if V8_OS_LINUX
+#if V8_OS_LINUX || V8_OS_MACOSX
   std::unique_ptr<LinuxPerfBasicLogger> perf_basic_logger_;
   std::unique_ptr<LinuxPerfJitLogger> perf_jit_logger_;
 #endif

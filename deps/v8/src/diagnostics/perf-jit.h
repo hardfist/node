@@ -31,7 +31,7 @@
 #include "include/v8config.h"
 
 // {LinuxPerfJitLogger} is only implemented on Linux.
-#if V8_OS_LINUX
+#if V8_OS_LINUX || V8_OS_DARWIN
 
 #include "src/logging/log.h"
 

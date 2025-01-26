@@ -31,7 +31,7 @@
 #include "src/flags/flags.h"
 
 // Only compile the {LinuxPerfJitLogger} on Linux.
-#if V8_OS_LINUX
+#if V8_OS_LINUX || V8_OS_DARWIN
 
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -152,10 +152,14 @@ void LinuxPerfJitLogger::OpenJitDumpFile() {
   // which is the only platform supported for --perf-prof anyway.
   if (v8_flags.perf_prof_delete_file)
     CHECK_EQ(0, unlink(perf_dump_name.begin()));
-
+#if V8_OS_DARWIN
+  // On macOS, samply uses a preload to find jitdumps and this mmap can be slow.
+  // https://bugzilla-dev.allizom.org/show_bug.cgi?id=1827214
+  marker_address_ = nullptr;
+#else
   marker_address_ = OpenMarkerFile(fd);
   if (marker_address_ == nullptr) return;
-
+#endif
   perf_output_handle_ = fdopen(fd, "w+");
   if (perf_output_handle_ == nullptr) return;
 
@@ -560,4 +564,4 @@ void LinuxPerfJitLogger::LogWriteHeader() {
 }  // namespace internal
 }  // namespace v8
 
-#endif  // V8_OS_LINUX
+#endif  // V8_OS_LINUX || V8_OS_DARWIN
